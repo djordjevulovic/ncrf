@@ -1,0 +1,115 @@
+module ncrf {
+  
+  namespace "http://github.com/ncrf";
+  prefix ncrf;
+  
+  import ietf-inet-types {
+    prefix inet;
+  }
+  import tailf-common {
+    prefix tailf;
+  }
+  import tailf-ncs {
+    prefix ncs;
+  }
+  
+  revision 2020-03-15 {
+    description
+    "Initial revision.";
+  }
+  
+  grouping discover-services-action-grp {
+    tailf:action discover-services {
+      tailf:info "Retrieve existing services";
+      input {
+        leaf device-name {
+          type leafref {
+            path "/ncs:devices/ncs:device/ncs:name";
+          }
+        }
+      }
+      
+      output {
+        leaf message {
+          type string;
+        }
+        leaf list-name {
+          type string;
+        }
+      }
+      } // tailf:action discover-services
+    }
+    
+    grouping generic-service-action-output-grp {
+      leaf message {
+        type string;
+      }
+      leaf result {
+        type enumeration {
+          enum Success;
+          enum Failure;
+        }
+      }
+    }
+    
+    grouping populate-service-action-grp {
+      tailf:action populate-service {
+        tailf:info "Populate candidate service";
+        input {
+        }
+        output {
+          uses generic-service-action-output-grp;
+        }
+      }
+    }
+    
+    grouping validate-service-action-grp {
+      tailf:action validate-service {
+        tailf:info "Validate candidate service";
+        input {
+        }
+        output {
+          uses generic-service-action-output-grp;
+          leaf dry-run {
+            type string;
+          }
+        }
+      }
+    }
+    grouping reconcile-service-action-grp {
+      tailf:action reconcile-service {
+        tailf:info "Reconcile candidate service";
+        input {
+        }
+        output {
+          uses generic-service-action-output-grp;
+        }
+      }
+    }
+    
+    grouping reconciliation-grp {
+      list discovered-service-list {
+        key name;
+        leaf name {
+          type string;
+        }
+        
+        list service-instance-candidate {
+          key ncrf-service-id;
+          leaf ncrf-service-id {
+            type string;
+          }
+          leaf confirmed {
+            type boolean;
+          }
+          leaf-list flags {
+            type string;
+          }
+          container service-data {
+          }
+          container aux-data {
+          }
+        }
+      }
+    }
+  }
